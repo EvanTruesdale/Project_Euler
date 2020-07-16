@@ -1,46 +1,53 @@
-from math import sqrt, floor
+import math
+import sys
 
-def get_sum_of_divisors(input_n):
-	# Start off with N/1, which will always work
-	total = 1
-	i = 2
-	divisors_list = []
-	while i <= floor(sqrt(input_n)):
-		if input_n % i == 0:
-			divisors_list.append(i)
-			divisors_list.append(input_n / i)
-		i += 1
-	divisors_list = list(set(divisors_list))
-	return sum(divisors_list)
+def is_abundant(num):
+    n = 2
+    divisors = [1]
+    while n <= math.sqrt(num):
+        if num % n == 0:
+            divisors.append(n)
+            divisors.append(num/n)
+        n += 1
+    divisors = list(set(divisors))
+    if sum(divisors) > num:
+        return True
+    return False
 
-abundant_n = 12
-abundant_list = []
-while abundant_n <= 28123:
-	if abundant_n < get_sum_of_divisors(abundant_n):
-		abundant_list.append(abundant_n)
-	abundant_n += 1
-
-total = 0
+abundant_nums = []
 n = 1
-lower_index = 0
+while n <= 28124:
+    if is_abundant(n):
+        abundant_nums.append(n)
+    n += 1
 
-def sum_of_abundants_value(input_n, input_lower_index):
-	for i in range(len(abundant_list)):
-		for j in range(i, len(abundant_list)):
+def sum_test(num):
+    i_1 = 0
+    i_2 = 0
+    max_i = len(abundant_nums)
+    abundant_1 = abundant_nums[i_1]
+    abundant_2 = abundant_nums[i_2]
+    sum = abundant_1 + abundant_2
+    while abundant_1 <= num and i_1 < max_i-1:
+        while sum <= num:
+            sum = abundant_1 + abundant_2
+            if sum == num:
+                return True
+            i_2 += 1
+            abundant_2 = abundant_nums[i_2]
+        i_1 += 1
+        i_2 = i_1
+        abundant_1 = abundant_nums[i_1]
+        abundant_2 = abundant_nums[i_2]
+    return False
 
-			if abundant_list[i] + abundant_list[j] > input_n:
-				break
-			if abundant_list[i] + abundant_list[j] == input_n:
-				#print("sum of: " + str(abundant_list[i]) + " " + str(abundant_list[j]))
-				return 0
-		if abundant_list[i] * 2 >= input_n:
-			break
-	return input_n
-
-while n <= 28123:
-	if n % 100 == 0:
-		print(str(n))
-	total += sum_of_abundants_value(n, lower_index)
-	
-	n += 1
-print(total)
+sum = 0
+n = 1
+limit = 28123
+while n <= limit:
+    sys.stdout.write("\r" + str(int(100*n/limit)) + "%")
+    if sum_test(n) == False:
+        sum += n
+    n += 1
+print("")
+print(sum)
